@@ -3,8 +3,8 @@
 use backend\Route;
 
 Route::get('movie-website/', "MainController@index");
-//Route::get('movie-website/delete', 'MainController@delete');
-//Route::get('create', 'MainController@create');
+Route::get('movie-website/searchResult', 'MainController@search');
+Route::get('movie-website/getMovie', 'MainController@getMovie');
 //Route::get('edit', 'MainController@edit');
 //Route::get('update', 'MainController@update');
 //Route::get('insert', 'MainController@insert');

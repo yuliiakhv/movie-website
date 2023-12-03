@@ -14,8 +14,7 @@ class MainController{
         
         try {
 
-            header("Access-Control-Allow-Origin: *");
-            header("Access-Control-Allow-Headers: *");
+            $this->getHeaders();
 
         //echo "<pre>";
         $perPage = $_GET["limit"] ?? 5;
@@ -52,9 +51,79 @@ class MainController{
 
     }
 
-    public function delete() {
-        echo("delete");
+    public function search() {
+
+        try {
+
+            $this->getHeaders();
+
+
+            $moviesArr = [];
+            $keyword = $_GET["keyword"] ?? null;
+        
+        
+        $sql = "SELECT id, title FROM movies WHERE title LIKE '%$keyword%' LIMIT 5";
+        $response = mysqli_query($this->conn, $sql);
+
+        if($response) {
+
+            while($row = mysqli_fetch_assoc($response)) {
+
+                $moviesArr['movies'][] = $row;
+            }
+
+        } else {
+
+            echo "Error ".$sql. "<br/>".mysqli_error($this->conn);
+        }
+
+
+        echo json_encode($moviesArr, JSON_PRETTY_PRINT);
+
+    } catch(\Exception $e) {
+
+        var_dump($e->getMessage());
     }
+    }
+
+    //get current movie
+
+    public function getMovie(){
+        try {
+
+        $this->getHeaders();
+
+
+            $currMovie = null;
+            $id = $_GET["id"] ?? null;
+        
+        if($id) {
+            $sql = "SELECT * FROM movies WHERE id='".$id."'";
+            $response = mysqli_query($this->conn, $sql);
+
+            if($response) {
+
+                while($row = mysqli_fetch_assoc($response)) {
+
+                    $currMovie = $row;
+                }
+
+            } else {
+
+                echo "Error ".$sql. "<br/>".mysqli_error($this->conn);
+            }
+        }
+        
+        echo json_encode($currMovie, JSON_PRETTY_PRINT);
+
+    } catch(\Exception $e) {
+
+        var_dump($e->getMessage());
+    }
+    }
+
+
+
     // Get movies for third party api
 
     public function getMovies() {
@@ -128,6 +197,31 @@ class MainController{
                 }
         }
         mysqli_close($this->conn);
+    }
+
+    public function getHeaders(){
+
+        header('Access-Control-Allow-Origin: *');
+        header('Access-Control-Allow-Credentials: true');
+        header('Access-Control-Max-Age: 86400'); //cache for 1 day
+        header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
+        header('Access-Control-Allow-Headers: Origin, X-Requested-With, Content-Type, Accept, Authorization');
+
+        if($_SERVER['REQUEST_METHOD'] == 'OPTIONS'){
+            echo"OPTIONS";
+            
+            if(isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_METHOD'])){
+
+                header('Access-Control-Allow-Methods: GET, POST, PUT, OPTIONS');
+            }
+
+            if(isset($_SERVER['HTTP_ACCESS_CONTROL_REQUEST_HEADERS'])){
+
+                header('Access-Control-Allow-Headers: {$_SERVER["HTTP_ACCESS_CONTROL_REQUEST_HEADERS"]}');
+            }
+
+            exit(0);
+        }
     }
 
 }

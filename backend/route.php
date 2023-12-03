@@ -11,9 +11,7 @@ class Route{
         $route = substr($_SERVER['REQUEST_URI'], 1);
         if (strripos($route, "?") != NULL) {
             $route = strstr($route, "?", true);
-        } else {
-            echo("didnt");
-        }
+        } 
         foreach (self::$URLS as $value) {
             if ($value["path"] ==  $route) {
                 $contr = explode('@', $value["ctrl"]);
