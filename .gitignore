@@ -1,0 +1,2 @@
+# Ignore the .cache directory within frontend/node_modules
+frontend/node_modules/.cache/
